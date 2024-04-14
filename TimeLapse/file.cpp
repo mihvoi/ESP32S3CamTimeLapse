@@ -12,7 +12,7 @@ bool writeFile(const char *path, const unsigned char *data, unsigned long len)
 	}
 	if (file.write(data, len))
 	{
-		Serial.println("File written");
+		Serial.printf("File written len=%d path=%s\n", len, path);
 	}
 	else
 	{
@@ -48,11 +48,33 @@ bool appendFile(const char *path, const unsigned char *data, unsigned long len)
 
 bool initFileSystem()
 {
+#ifdef ARDUINO_ESP32S3_DEV
+    int sd_clk = 39;
+    int sd_cmd = 38;
+    int sd_data = 40;
+    
+    Serial.printf("Remapping SD_MMC card pins to sd_clk=%d sd_cmd=%d sd_data=%d\n", sd_clk, sd_cmd, sd_data);
+    if(! SD_MMC.setPins(sd_clk, sd_cmd, sd_data)){
+        Serial.println("Pin change failed!");
+        return false;
+    }
+
+    //Mounting with mode1bit=true
+    if(!SD_MMC.begin("/sdcard", true)){
+        Serial.println("Card Mount Failed");
+        return false;
+    }
+
+  Serial.println("Card Mount OK");
+
+#else
 	if (!SD_MMC.begin())
 	{
 		Serial.println("Card Mount Failed");
 		return false;
 	}
+#endif
+
 	uint8_t cardType = SD_MMC.cardType();
 
 	if (cardType == CARD_NONE)

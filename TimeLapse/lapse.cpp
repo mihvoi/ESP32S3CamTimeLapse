@@ -5,7 +5,7 @@
 
 unsigned long fileIndex = 0;
 unsigned long lapseIndex = 0;
-unsigned long frameInterval = 1000;
+unsigned long frameInterval = 5000;
 bool mjpeg = true;
 bool lapseRunning = false;
 unsigned long lastFrameDelta = 0;
