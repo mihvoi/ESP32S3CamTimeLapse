@@ -5,14 +5,16 @@
 
 unsigned long fileIndex = 0;
 unsigned long lapseIndex = 0;
-unsigned long frameInterval = 5000;
+unsigned long volatile frameInterval = 5000;
 bool mjpeg = true;
 bool lapseRunning = false;
 unsigned long lastFrameDelta = 0;
 
-void setInterval(unsigned long delta)
+bool setInterval(unsigned long delta)
 {
     frameInterval = delta;
+    Serial.printf("\nUpdated frameInterval=%ld\n", frameInterval);
+    return true;
 }
 
 bool startLapse()
@@ -37,6 +39,7 @@ bool startLapse()
 bool stopLapse()
 {
     lapseRunning = false;
+    return true;
 }
 
 bool processLapse(unsigned long dt)
@@ -44,9 +47,9 @@ bool processLapse(unsigned long dt)
     if(!lapseRunning) return false;
 
     lastFrameDelta += dt;
-    if(lastFrameDelta >= frameInterval)
-    {
-        lastFrameDelta -= frameInterval;
+    // if(lastFrameDelta >= frameInterval)
+    // {
+    //     lastFrameDelta -= frameInterval;
         camera_fb_t *fb = NULL;
         esp_err_t res = ESP_OK;
         fb = esp_camera_fb_get();
@@ -58,7 +61,7 @@ bool processLapse(unsigned long dt)
 
         char path[32];
         sprintf(path, "/lapse%03d/pic%05d.jpg", lapseIndex, fileIndex);
-        Serial.println(path);
+        //Serial.println(path);
         if(!writeFile(path, (const unsigned char *)fb->buf, fb->len))
         {
             lapseRunning = false;
@@ -66,6 +69,6 @@ bool processLapse(unsigned long dt)
         }
         fileIndex++;
         esp_camera_fb_return(fb);
-    }
+    //}
     return true;
 }

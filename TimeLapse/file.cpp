@@ -3,16 +3,16 @@
 
 bool writeFile(const char *path, const unsigned char *data, unsigned long len)
 {
-	Serial.printf("Writing file: %s\n", path);
+	Serial.printf("\nWriting file len=%d path=%s\n", len, path);
 	File file = SD_MMC.open(path, FILE_WRITE);
 	if (!file)
 	{
-		Serial.println("Failed to open file for writing");
+		Serial.println("\nFailed to open file for writing");
 		return false;
 	}
 	if (file.write(data, len))
 	{
-		Serial.printf("File written len=%d path=%s\n", len, path);
+		//Serial.printf("File written len=%d path=%s\n", len, path);
 	}
 	else
 	{
@@ -102,14 +102,14 @@ bool initFileSystem()
 
 bool createDir(const char *path)
 {
-	Serial.printf("Creating Dir: %s\n", path);
+	Serial.printf("\nCreating Dir: %s\n", path);
 	if (SD_MMC.mkdir(path))
 	{
-		Serial.println("Dir created");
+		Serial.printf("Dir created dir=%s\n", path);
 	}
 	else
 	{
-		Serial.println("mkdir failed");
+		Serial.println("\nmkdir failed");
 		return false;
 	}
 	return true;

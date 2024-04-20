@@ -131,8 +131,8 @@ static esp_err_t streamHandler(httpd_req_t *req)
 	do
 	{
 		fb = esp_camera_fb_get();
-		Serial.print("Frame size ");
-		Serial.println(fb->len);
+		//Serial.print("Frame size ");
+		Serial.printf(" [F=%dB]", fb->len);
 		if (!fb)
 		{
 			Serial.println("Camera capture failed");

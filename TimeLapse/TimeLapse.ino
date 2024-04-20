@@ -56,9 +56,12 @@ void setup()
 	Serial.println();
 	initFileSystem();
 	initCamera();
+  
   Serial.printf("Connecting to WIFI ssid=%s\n", ssid);
 	WiFi.begin(ssid, password);
-	while (WiFi.status() != WL_CONNECTED)
+
+	
+  while (WiFi.status() != WL_CONNECTED)
 	{
 		delay(500);
 		Serial.print(".");
@@ -71,13 +74,59 @@ void setup()
 	Serial.println("' to connect");
 }
 
+/**
+  * Returns elapsed period in ms from the previous return
+  */
+
+long sleepTo(long nextCapture){
+    unsigned long now;
+    static unsigned long previousCapture = 0;
+
+    now = millis();
+    
+    long toSleep = nextCapture - now - 1;
+    if(toSleep < 0){
+      Serial.printf("\nWarn: will still sleep 1ms even if toSleep=%ld ms\n", toSleep);
+      toSleep=1;
+    } 
+    
+    Serial.printf(" [sleep=%Ldms]", toSleep);
+    delay(toSleep);
+
+  //Verify the wake delay
+  now = millis();
+  long diff = nextCapture - now;
+  if( diff > 2 ){
+    Serial.printf("\nWarn: woke up too early with diff=%Ld ms\n", diff);
+    sleepTo(nextCapture);
+  }
+
+  //We are not early, are we late?
+  now = millis();
+  long late = now - nextCapture;
+    if(late>1){
+      Serial.printf("\nWarn: late capture by %Ld ms\n", late);
+    }
+
+  long dt = now - previousCapture;
+  previousCapture = millis();
+  return dt;
+}
+
+extern unsigned long frameInterval;
 void loop()
 {
-	unsigned long t = millis();
-	static unsigned long ot = 0;
-	unsigned long dt = t - ot;
-	ot = t;
+  static unsigned long nextCapture = 0;
+	unsigned long now = millis();
+
+  //Adjustment at start and when we are very behind
+  if(nextCapture < now-1000){
+    Serial.printf("\nWar: Adjusting nextCapture=now=%Ld\n", now);
+    nextCapture = now;
+  }
+
+  nextCapture += frameInterval;
+  long dt = sleepTo(nextCapture);
+  Serial.printf(" [elapsed=%Ldms]", dt);
 	processLapse(dt);
-  Serial.print("l");
-  sleep(1); //Don't like tight loops
 }
