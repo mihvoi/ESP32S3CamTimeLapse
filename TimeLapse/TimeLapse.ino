@@ -58,7 +58,7 @@ void setup()
 	initCamera();
   
   Serial.printf("Connecting to WIFI ssid=%s\n", ssid);
-	WiFi.begin(ssid, password);
+  WiFi.begin(ssid, password);
 	
   while (WiFi.status() != WL_CONNECTED)
 	{
@@ -104,7 +104,7 @@ long sleepTo(long nextCapture){
   now = millis();
   long late = now - nextCapture;
     if(late>1){
-      Serial.printf("\nWarn: late capture by %Ld ms\n", late);
+      Serial.printf("\nWarn: late capture by %Ldms\n", late);
     }
 
   long dt = now - previousCapture;
@@ -119,6 +119,8 @@ long dt = 5000; //Can be 0; just for backward compatibility with original proces
 void loop()
 {
 
+  dt = sleepTo(nextCapture);
+  Serial.printf("\n[elapsed=%Ldms]", dt);
 	processLapse(dt);
 
   nextCapture += frameInterval;
@@ -129,8 +131,4 @@ void loop()
     Serial.printf("\nWarn: Adjusting from nextCapture=%Ld to now=%Ld\n", nextCapture, now);
     nextCapture = now;
   }
-
-  dt = sleepTo(nextCapture);
-  Serial.printf(" [elapsed=%Ldms]", dt);
-
 }
