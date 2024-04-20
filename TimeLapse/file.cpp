@@ -4,6 +4,7 @@
 bool writeFile(const char *path, const unsigned char *data, unsigned long len)
 {
 	Serial.printf("\nWriting file len=%d path=%s\n", len, path);
+  long startMs = millis();
 	File file = SD_MMC.open(path, FILE_WRITE);
 	if (!file)
 	{
@@ -19,6 +20,10 @@ bool writeFile(const char *path, const unsigned char *data, unsigned long len)
 		Serial.println("Write failed");
 		return false;
 	}
+  long writeMs = millis() - startMs;
+  if(writeMs > 1){
+    Serial.printf(" [SDwrite=%Ldms]", writeMs);
+  }
 	file.close();
 	return true;
 }

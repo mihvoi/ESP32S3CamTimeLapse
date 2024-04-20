@@ -59,7 +59,6 @@ void setup()
   
   Serial.printf("Connecting to WIFI ssid=%s\n", ssid);
 	WiFi.begin(ssid, password);
-
 	
   while (WiFi.status() != WL_CONNECTED)
 	{
@@ -114,19 +113,24 @@ long sleepTo(long nextCapture){
 }
 
 extern unsigned long frameInterval;
+static unsigned long nextCapture = 0;
+long dt = 5000; //Can be 0; just for backward compatibility with original processLapse()
+
 void loop()
 {
-  static unsigned long nextCapture = 0;
-	unsigned long now = millis();
+
+	processLapse(dt);
+
+  nextCapture += frameInterval;
 
   //Adjustment at start and when we are very behind
+  unsigned long now = millis();
   if(nextCapture < now-1000){
-    Serial.printf("\nWar: Adjusting nextCapture=now=%Ld\n", now);
+    Serial.printf("\nWarn: Adjusting from nextCapture=%Ld to now=%Ld\n", nextCapture, now);
     nextCapture = now;
   }
 
-  nextCapture += frameInterval;
-  long dt = sleepTo(nextCapture);
+  dt = sleepTo(nextCapture);
   Serial.printf(" [elapsed=%Ldms]", dt);
-	processLapse(dt);
+
 }

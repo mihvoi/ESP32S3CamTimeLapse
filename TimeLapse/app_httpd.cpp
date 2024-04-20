@@ -131,13 +131,13 @@ static esp_err_t streamHandler(httpd_req_t *req)
 	do
 	{
 		fb = esp_camera_fb_get();
-		//Serial.print("Frame size ");
-		Serial.printf(" [F=%dB]", fb->len);
 		if (!fb)
 		{
-			Serial.println("Camera capture failed");
+			Serial.println("\nError: Camera capture failed");
 			continue;
 		}
+    //Serial.print("Frame size ");
+    Serial.printf(" [F=%dB]", fb->len);
 		size_t hlen = snprintf((char *)part_buf, 64, _STREAM_PART, fb->len);
 		res = httpd_resp_send_chunk(req, (const char *)part_buf, hlen);
 		if (res == ESP_OK)
