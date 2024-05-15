@@ -52,12 +52,10 @@
 #include "camera.h"
 #include "lapse.h"
 
-//This should not be in GIT !!!!!!!!!!!!!!!
-#define WIFI_SSID "wiremore2"
-#define WIFI_PASS "motioneye"
-//This should not be in GIT !!!!!!!!!!!!!!!
+//A place where you can keep your wifi credentials
+#include "credentials.h"
 
-//You can overwrite WIFI credentials below or in above headers
+//You can overwrite WIFI credentials below or in above credentials.h
 #ifndef WIFI_SSID
 #define WIFI_SSID "changeme"
 #define WIFI_PASS "changeme"
