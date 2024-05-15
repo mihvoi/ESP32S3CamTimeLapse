@@ -1,39 +1,9 @@
-#include "Arduino.h"
 #include "camera.h"
-
-
-//Try to guess the camera model based on selected board
-//Please overwrite below if you get the wrong setting
-#ifdef ARDUINO_ESP32S3_DEV
-#define CAMERA_MODEL_ESP32S3_EYE
-#endif
-
-#ifdef ARDUINO_ESP32_DEV
-#define CAMERA_MODEL_AI_THINKER
-#endif
-
-//Good for ESP32-S3-WROOM CAM, resembling "Freenove ESP32-Wrover CAM" (Freenove not tested)
-//Like: https://github.com/Freenove/Freenove_ESP32_S3_WROOM_Board/blob/main/Datasheet/ESP32-S3%20Pinout.pdf
-//#define CAMERA_MODEL_ESP32S3_EYE
-
-//Good for ESP32-CAM with Arduino board "AI Thinker ESP32-CAM"
-//#define CAMERA_MODEL_AI_THINKER
-
-
-// Select camera model
-//#define CAMERA_MODEL_WROVER_KIT
-//#define CAMERA_MODEL_ESP_EYE
-//#define CAMERA_MODEL_M5STACK_PSRAM
-//#define CAMERA_MODEL_M5STACK_WIDE
-//#define CAMERA_MODEL_AI_THINKER
-
-
-#include "camera_pins.h"
 
 
 bool initCamera()
 {
-    camera_config_t config;
+  camera_config_t config;
 	config.ledc_channel = LEDC_CHANNEL_0;
 	config.ledc_timer = LEDC_TIMER_0;
 	config.pin_d0 = Y2_GPIO_NUM;

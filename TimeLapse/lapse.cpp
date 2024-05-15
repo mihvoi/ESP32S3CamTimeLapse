@@ -17,7 +17,9 @@ bool setInterval(unsigned long delta) {
 }
 
 bool startLapse() {
+  Serial.println("\nStarting timelapse");
   if (lapseRunning) return true;
+
   fileIndex = 0;
   char path[32];
   for (; lapseIndex < 10000; lapseIndex++) {
@@ -33,13 +35,17 @@ bool startLapse() {
 }
 
 bool stopLapse() {
+  Serial.println("\STOPPING timelapse");
   lapseRunning = false;
   return true;
 }
 
 //dt can be removed; kept for backward compatibility with the old code
 bool processLapse(unsigned long dt) {
-  if (!lapseRunning) return false;
+  if (!lapseRunning){
+    Serial.println("\nWarning: called while lapseRunning=false");
+    return false;
+  }
 
   camera_fb_t *fb = NULL;
   esp_err_t res = ESP_OK;

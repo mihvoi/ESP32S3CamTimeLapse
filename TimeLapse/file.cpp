@@ -1,6 +1,10 @@
 #include "FS.h"
 #include "SD_MMC.h"
 
+//For matching the SD pind by CAMERA_MODEL_*
+#include "camera.h"
+
+
 bool writeFile(const char *path, const unsigned char *data, unsigned long len)
 {
 	Serial.printf("\nWriting file len=%d path=%s\n", len, path);
@@ -53,31 +57,57 @@ bool appendFile(const char *path, const unsigned char *data, unsigned long len)
 
 bool initFileSystem()
 {
-#ifdef ARDUINO_ESP32S3_DEV
-    int sd_clk = 39;
-    int sd_cmd = 38;
-    int sd_data = 40;
+
+// non default pins configured for SD card on given camera board
+#if defined(CAMERA_MODEL_ESP32S3_EYE) || defined(CAMERA_MODEL_FREENOVE_ESP32S3_CAM)
+#define SD_MMC_CLK 39 
+#define SD_MMC_CMD 38
+#define SD_MMC_D0 40
+#elif defined(CAMERA_MODEL_XIAO_ESP32S3)
+#define SD_MMC_CLK 7 
+#define SD_MMC_CMD 9
+#define SD_MMC_D0 8
+#elif defined(CAMERA_MODEL_TTGO_T_CAMERA_PLUS)
+#define SD_MMC_CLK 21 // SCLK
+#define SD_MMC_CMD 19 // MOSI
+#define SD_MMC_D0 22  // MISO
+#endif
+
+
+
+#if defined(SD_MMC_CLK) 
+    int sd_clk = SD_MMC_CLK;
+    int sd_cmd = SD_MMC_CMD;
+    int sd_data = SD_MMC_D0;
     
     Serial.printf("Remapping SD_MMC card pins to sd_clk=%d sd_cmd=%d sd_data=%d\n", sd_clk, sd_cmd, sd_data);
     if(! SD_MMC.setPins(sd_clk, sd_cmd, sd_data)){
         Serial.println("Pin change failed!");
         return false;
+    } else {
+        Serial.println("Pin change success!");
     }
 
     //Mounting with mode1bit=true
     if(!SD_MMC.begin("/sdcard", true)){
         Serial.println("Card Mount Failed");
         return false;
+    }else{
+        Serial.println("Card Mount SUCCESS");
     }
 
   Serial.println("Card Mount OK");
 
 #else
+
+  Serial.printf("NOT remapping SD_MMC card pins, trying to SD_MMC.begin()...\n");
 	if (!SD_MMC.begin())
 	{
 		Serial.println("Card Mount Failed");
 		return false;
-	}
+	} else {
+    Serial.println("Success SD_MMC.begin()");
+  }
 #endif
 
 	uint8_t cardType = SD_MMC.cardType();

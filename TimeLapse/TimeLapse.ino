@@ -1,5 +1,13 @@
 /**
   * This project helps to create a "timelapse" video by saving a camera picture on SD card at a configurable interval
+  *
+  * Select board guideline:
+  * - ESP32-S3-WROOM1 CAM (resembels "Freenove ESP32-Wrover CAM") -> ESP32S3 Dev Module
+  * - ESP32-CAM -> AI Thinker ESP32-CAM
+  * - XIAO_ESP32S3 -> XIAO_ESP32S3 !! to activate SD might need to solder jumper, see https://wiki.seeedstudio.com/xiao_esp32s3_pin_multiplexing/ !!
+  * - for other boards, select the appropriate board in camera.h
+  * 
+  * Startup:
   * First you need to connect to the camera URL (check console) and adjust the resolution and other knobs
   * Then you can start the timelapse capture from the same web interface
   * The SD card must be formatted FAT or FAT32
@@ -8,7 +16,7 @@
   * 
   * This is a fork from https://github.com/bitluni/ESP32CamTimeLapse. AFAIK the ESP32CamTimeLapse project is based on CameraWebServer.ino project
   * 
-  * I fixed the timelapse for ESP32-S3-WROOM1 CAM camera, that resembles "Freenove ESP32-Wrover CAM". 
+  * I fixed the timelapse for the board ESP32-S3-WROOM1 CAM camera, that resembles "Freenove ESP32-Wrover CAM". 
   * Should still work with the original ESP32-CAM - tested with one. 
   *
   * Steps:
@@ -44,8 +52,19 @@
 #include "camera.h"
 #include "lapse.h"
 
-const char *ssid = "changeme";
-const char *password = "changeme";
+//This should not be in GIT !!!!!!!!!!!!!!!
+#define WIFI_SSID "wiremore2"
+#define WIFI_PASS "motioneye"
+//This should not be in GIT !!!!!!!!!!!!!!!
+
+//You can overwrite WIFI credentials below or in above headers
+#ifndef WIFI_SSID
+#define WIFI_SSID "changeme"
+#define WIFI_PASS "changeme"
+#endif
+
+const char* ssid = WIFI_SSID;
+const char* password = WIFI_PASS;
 
 void startCameraServer();
 
@@ -53,14 +72,16 @@ void setup()
 {
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
-	Serial.println();
+	Serial.println("Starting ESP32 timelapse");
 	initFileSystem();
 	initCamera();
   
   Serial.printf("Connecting to WIFI ssid=%s\n", ssid);
-  WiFi.begin(ssid, password);
-	
-  while (WiFi.status() != WL_CONNECTED)
+  WiFi.mode(WIFI_AP);
+	WiFi.begin(ssid, password);
+
+  int tries=100;
+  while (WiFi.status() != WL_CONNECTED && tries-- > 0)
 	{
 		delay(500);
 		Serial.print(".");
@@ -71,7 +92,14 @@ void setup()
 	Serial.print("Camera Ready! Use 'http://");
 	Serial.print(WiFi.localIP());
 	Serial.println("' to connect");
+
+  //Uncomment this if you want to start timelapse automatically; note that UI will still show it disable at start
+  // Serial.println("Starting TIMELAPSE write on SD card");
+  // Serial.println("You may want to increase the resolution from web interface");
+  // startLapse();
 }
+
+
 
 /**
   * Returns elapsed period in ms from the previous return
@@ -90,6 +118,7 @@ long sleepTo(long nextCapture){
     } 
     
     Serial.printf(" [sleep=%Ldms]", toSleep);
+
     delay(toSleep);
 
   //Verify the wake delay
@@ -113,6 +142,7 @@ long sleepTo(long nextCapture){
 }
 
 extern unsigned long frameInterval;
+extern bool lapseRunning;
 static unsigned long nextCapture = 0;
 long dt = 5000; //Can be 0; just for backward compatibility with original processLapse()
 
@@ -121,14 +151,19 @@ void loop()
 
   dt = sleepTo(nextCapture);
   Serial.printf("\n[elapsed=%Ldms]", dt);
-	processLapse(dt);
 
-  nextCapture += frameInterval;
-
+  if(lapseRunning){
+  	processLapse(dt);
+  }else{
+     Serial.printf(" [timelapse disabled]");
+  }
+ 
   //Adjustment at start and when we are very behind
   unsigned long now = millis();
   if(nextCapture < now-1000){
     Serial.printf("\nWarn: Adjusting from nextCapture=%Ld to now=%Ld\n", nextCapture, now);
     nextCapture = now;
   }
+
+    nextCapture += frameInterval;
 }
