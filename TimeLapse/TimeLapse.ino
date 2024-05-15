@@ -55,11 +55,9 @@
 //A place where you can keep your wifi credentials
 #include "credentials.h"
 
-//You can overwrite WIFI credentials below or in above credentials.h
-#ifndef WIFI_SSID
-#define WIFI_SSID "changeme"
-#define WIFI_PASS "changeme"
-#endif
+//You can overwrite WIFI credentials below or better define them in credentials.h
+//#define WIFI_SSID "changeme"
+//#define WIFI_PASS "changeme"
 
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASS;
