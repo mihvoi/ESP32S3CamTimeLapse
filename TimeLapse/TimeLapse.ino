@@ -3,8 +3,8 @@
   *
   * Select board guideline:
   * - ESP32-S3-WROOM1 CAM (resembels "Freenove ESP32-Wrover CAM") -> ESP32S3 Dev Module
-  * - ESP32-CAM -> AI Thinker ESP32-CAM
   * - XIAO_ESP32S3 -> XIAO_ESP32S3 !! to activate SD might need to solder jumper, see https://wiki.seeedstudio.com/xiao_esp32s3_pin_multiplexing/ !!
+  * - ESP32-CAM (old ESP32 camera board) -> AI Thinker ESP32-CAM
   * - for other boards, select the appropriate board in camera.h
   * 
   * Startup:
