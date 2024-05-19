@@ -111,6 +111,7 @@ void setup()
 #ifdef AUTOSTART_TIMELAPSE
   Serial.println("Starting TIMELAPSE write on SD card");
   Serial.println("You may want to increase the resolution from web interface");
+  setInterval(3000); //milliseconds interval for capture
   startLapse();
 #endif
 
@@ -169,7 +170,7 @@ void loop()
 {
   loopNumber++;
   dt = sleepTo(nextCapture);
-  Serial.printf("\n[elapsed=%Ldms]", dt);
+  Serial.printf("\n [elapsed=%Ldms]", dt);
 
   if(lapseRunning){
     
