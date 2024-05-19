@@ -77,6 +77,9 @@ void setup()
 	Serial.setDebugOutput(true);
 	Serial.println("Starting ESP32 timelapse");
 	initFileSystem();
+  Serial.println("After initFileSystem SD");
+  print_SD_free_space();
+
 	initCamera();
   
   Serial.printf("Connecting to WIFI ssid=%s\n", ssid);
@@ -158,16 +161,24 @@ long sleepTo(long nextCapture){
 extern unsigned long frameInterval;
 extern bool lapseRunning;
 static unsigned long nextCapture = 0;
+static unsigned long loopNumber = 0;
+static unsigned long startMs = millis();
 long dt = 5000; //Can be 0; just for backward compatibility with original processLapse()
 
 void loop()
 {
-
+  loopNumber++;
   dt = sleepTo(nextCapture);
   Serial.printf("\n[elapsed=%Ldms]", dt);
 
   if(lapseRunning){
-  	processLapse(dt);
+    
+    processLapse(dt);
+
+    if(loopNumber % 10 == 0){
+      printStats();
+    }
+
   }else{
      Serial.printf(" [timelapse disabled]");
   }
@@ -180,4 +191,12 @@ void loop()
   }
 
     nextCapture += frameInterval;
+}
+
+void printStats(){
+      long uptimeSec = (millis() - startMs)/1000;
+      long uptimeMin = uptimeSec/60;
+      uptimeSec = uptimeSec - (uptimeMin*60);
+      Serial.printf("\nUptime: %lu min %lu sec ; loopNumber=%lu\n", uptimeMin, uptimeSec, loopNumber);
+      print_SD_free_space();
 }

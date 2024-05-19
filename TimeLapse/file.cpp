@@ -154,3 +154,11 @@ bool fileExists(const char *path)
 {
 	return SD_MMC.exists(path);
 }
+
+void print_SD_free_space(){
+    uint64_t totalMB = SD_MMC.totalBytes() / (1024 * 1024);
+    uint64_t usedMB = SD_MMC.usedBytes() / (1024 * 1024);
+    uint64_t freeMB = totalMB - usedMB;
+    uint64_t percFull = usedMB*100/totalMB;
+    Serial.printf("SD card used=%2d%% ; freeMB=%llu\n", percFull, freeMB);
+}
