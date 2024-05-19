@@ -55,9 +55,16 @@
 //A place where you can keep your wifi credentials
 #include "credentials.h"
 
+
 //You can overwrite WIFI credentials below or better define them in credentials.h
 //#define WIFI_SSID "changeme"
 //#define WIFI_PASS "changeme"
+
+//Define AUTOSTART_TIMELAPSE above or in credentials.h to start timelapse automatically; note that UI will still show it disable at start
+//#define AUTOSTART_TIMELAPSE
+
+//Define START_AT_MAX_RESOLUTION if you want to start at maximum resolution - assure PSRAM is activated, otherwise the execution will likely break
+//#define START_AT_MAX_RESOLUTION
 
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASS;
@@ -89,10 +96,21 @@ void setup()
 	Serial.print(WiFi.localIP());
 	Serial.println("' to connect");
 
-  //Uncomment this if you want to start timelapse automatically; note that UI will still show it disable at start
-  // Serial.println("Starting TIMELAPSE write on SD card");
-  // Serial.println("You may want to increase the resolution from web interface");
-  // startLapse();
+
+#ifdef START_AT_MAX_RESOLUTION
+  Serial.printf("Setting resolution to FRAMESIZE_UXGA\n");
+  sensor_t *s = esp_camera_sensor_get();
+  //s->set_framesize(s, FRAMESIZE_QVGA);
+  s->set_framesize(s, FRAMESIZE_UXGA);
+  
+#endif
+
+#ifdef AUTOSTART_TIMELAPSE
+  Serial.println("Starting TIMELAPSE write on SD card");
+  Serial.println("You may want to increase the resolution from web interface");
+  startLapse();
+#endif
+
 }
 
 
