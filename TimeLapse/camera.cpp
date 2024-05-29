@@ -27,14 +27,14 @@ bool initCamera()
 	//init with high specs to pre-allocate larger buffers
 	if (psramFound())
 	{
-    Serial.println("Found PSRAM, this will improve performance!");
+    Serial.println("\nFound PSRAM, this will improve performance!");
 		config.frame_size = FRAMESIZE_UXGA;
 		config.jpeg_quality = 10;
 		config.fb_count = 2;
 	}
 	else
 	{
-    Serial.println("Warning, PSRAM not detected. If your board has PSRAM, activate it from Tools/PSRAM ('OPI PRAM' option worked for me) !");
+    Serial.println("\nWarning, PSRAM not detected. If your board has PSRAM, activate it from Tools/PSRAM ('OPI PRAM' option worked for me) !");
 		config.frame_size = FRAMESIZE_SVGA;
 		config.jpeg_quality = 12;
 		config.fb_count = 1;

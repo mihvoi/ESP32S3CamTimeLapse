@@ -3,6 +3,7 @@
   *
   * Select board guideline:
   * - ESP32-S3-WROOM1 CAM (resembels "Freenove ESP32-Wrover CAM") -> ESP32S3 Dev Module
+  * - ESP32-S3-CAM - new version -> ESP32S3 Dev Module - needs new serial adaptor to see anything on console; however flashing works with old ESP32-CAM adapter, just need to guess the camera IP without logs
   * - XIAO_ESP32S3 -> XIAO_ESP32S3 !! to activate SD might need to solder jumper, see https://wiki.seeedstudio.com/xiao_esp32s3_pin_multiplexing/ !!
   * - ESP32-CAM (old ESP32 camera board) -> AI Thinker ESP32-CAM
   * - for other boards, select the appropriate board in camera.h
@@ -32,7 +33,7 @@
   *  - activate Tools/PSRAM/OPI PSRAM - if available
   *  - burn the image to the board; you might need to keep the Boot/IO0 button pushed before connecting the USB cable to the board.
   *  - boot/reset the ESP32 board
-  *  - check the console for Camera Ready! Use 'http://xx.xx.xx.xx' to connect
+  *  - check the console for Camera Ready! Use 'http://xx.xx.xx.xx/' to connect (IP assigned by WiFi)
   *  - connect to the URL
   *  - check Still/Stream
   *  - increase resolution to the maximum that does not freeze
@@ -111,7 +112,7 @@ void setup()
 #ifdef AUTOSTART_TIMELAPSE
   Serial.println("Starting TIMELAPSE write on SD card");
   Serial.println("You may want to increase the resolution from web interface");
-  setInterval(3000); //milliseconds interval for capture
+  setInterval(5000); //milliseconds interval for capture
   startLapse();
 #endif
 
