@@ -76,7 +76,7 @@ void setup()
 {
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
-	Serial.println("Starting ESP32 timelapse");
+	Serial.println("\n\nStarting ESP32 timelapse");
 	initFileSystem();
   Serial.println("After initFileSystem SD");
   print_SD_free_space();
