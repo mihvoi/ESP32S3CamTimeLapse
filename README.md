@@ -10,7 +10,7 @@ Timelapse TESTED on the following boards - others might also work:
 
 
 ![Boards I tested with](Esp32S3CamBoards.jpg)
-
+![Tested ESP32-S3-CAM](ESP32-S3-CAM_2.jpg)
 
 This code was forked from: https://bitluni.net/esp32camtimelapse
 
